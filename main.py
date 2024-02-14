@@ -1,4 +1,6 @@
 from typing import List
+import time
+import random
 
 import requests
 import pandas as pd
@@ -17,9 +19,14 @@ def split_list(list1, chunk_size):
         chunked_list.append(chunk)
     return chunked_list
 
-def sort_table_data(collected_table_data: dict) -> list[dict]:
+def sort_table_data(collected_table_data: dict, key_name: str) -> list[dict]:
     sorted_table_data = []
-    cleaned_categories = collected_table_data['team_data_categories'][1:] if '' in collected_table_data['team_data_categories'] else collected_table_data['team_data_categories']
+    if 'Defensive' in key_name:
+        cleaned_categories = collected_table_data['team_data_categories'][4:]
+        cleaned_categories[0] = 'TOT TACKLES'
+        cleaned_categories[1] = 'SOLO TACKLES'
+    else:
+        cleaned_categories = collected_table_data['team_data_categories'][1:]
     split_stats = split_list(collected_table_data['stats'], len(cleaned_categories))
     for i, player in enumerate(collected_table_data['players']):
         data = {'Player Name': player}
@@ -30,15 +37,12 @@ def sort_table_data(collected_table_data: dict) -> list[dict]:
 
 def collect_table_data(box_score_data: BeautifulSoup, key_name: str, team_index: int) -> List:
     collected_table_data = {}
-    if 'Defensive' not in key_name:
-        team_table_data = box_score_data.select('.Boxscore__Team')[team_index]
-        team_stats = team_table_data.select('.Table__TBODY')
-        collected_table_data['team_data_categories'] = [t.text for t in team_table_data.select('.Table__TH')]
-        collected_table_data['players'] = [t.text for t in team_stats[0]] if team_stats else []
-        collected_table_data['stats'] = [t.text for t in team_stats[1].select('.Table__TD')] if team_stats else []
-        return sort_table_data(collected_table_data)
-    else:
-        return []
+    team_table_data = box_score_data.select('.Boxscore__Team')[team_index]
+    team_stats = team_table_data.select('.Table__TBODY')
+    collected_table_data['team_data_categories'] = [t.text for t in team_table_data.select('.Table__TH')]
+    collected_table_data['players'] = [t.text for t in team_stats[0]] if team_stats else []
+    collected_table_data['stats'] = [t.text for t in team_stats[1].select('.Table__TD')] if team_stats else []
+    return sort_table_data(collected_table_data, key_name)
 
 def get_individual_team_boxscores(team_data: BeautifulSoup):
     box_scores = team_data.select('.Boxscore__Category')
@@ -99,7 +103,18 @@ def get_games_data(soup: BeautifulSoup, week: int) -> pd.DataFrame:
 
 
 if __name__ == '__main__':
-    week = 18
-    soup = BeautifulSoup(requests.get(f'{URL}/nfl/scoreboard/_/week/18/year/2023/seasontype/2', headers=HEADERS).content, 'html.parser')
-    df = get_games_data(soup, week)
+    reg_season_dfs = {}
+    years = range(2013, 2024)
+    weeks = range(1, 19)
+    for year in years:
+        reg_season_dfs[f'season year {year}'] = []
+        for week in weeks:
+            req = requests.get(f'{URL}/nfl/scoreboard/_/week/{week}/year/{year}/seasontype/2', headers=HEADERS)
+            if req.status_code == 200:
+                soup = BeautifulSoup(req.content, 'html.parser')
+                reg_season_dfs[f'season year {year}'].append(get_games_data(soup, week))
+                time.sleep(random.randint(3, 6))
+            else:
+                print(req.status_code)
+                print(req.content)
     print('done')
