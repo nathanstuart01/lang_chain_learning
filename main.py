@@ -6,6 +6,8 @@ import requests
 import pandas as pd
 from bs4 import BeautifulSoup
 
+from vector_db import upload_data_vector_db
+
 URL = 'https://www.espn.com'
 HEADERS = {
         'User-Agent': 'My User Agent 1.0',
@@ -62,7 +64,7 @@ def get_boxscores(url: str) -> List[dict]:
     return get_individual_team_boxscores(data)
 
 
-def get_games_data(soup: BeautifulSoup, week: int) -> pd.DataFrame:
+def get_games_data(soup: BeautifulSoup, week: int, year: int) -> pd.DataFrame:
     all_data = []
     games = soup.select('.ScoreboardScoreCell__Item')
     game_links = soup.select('.Scoreboard__Callouts')
@@ -86,11 +88,12 @@ def get_games_data(soup: BeautifulSoup, week: int) -> pd.DataFrame:
             quarter_scores2 = {f'q{i + 1}': int(t.text)  for i, t in enumerate(game.select('.ScoreboardScoreCell__Value'))}
             box_score_2 = box_scores[1]
             game_number += 1
-            all_data.append((week, title, team1, score1, quarter_scores1, team2, score2, quarter_scores2, box_score_1, box_score_2))
+            all_data.append((week, year, title, team1, score1, quarter_scores1, team2, score2, quarter_scores2, box_score_1, box_score_2))
             continue
     
     return pd.DataFrame(all_data, columns=[
         'Week',
+        'Year',
         'Date', 
         'Team 1', 
         'Score 1', 
@@ -103,16 +106,14 @@ def get_games_data(soup: BeautifulSoup, week: int) -> pd.DataFrame:
 
 
 if __name__ == '__main__':
-    reg_season_dfs = {}
     years = range(2013, 2024)
-    weeks = range(1, 19)
+    weeks = range(1, 18)
     for year in years:
-        reg_season_dfs[f'season year {year}'] = []
         for week in weeks:
-            req = requests.get(f'{URL}/nfl/scoreboard/_/week/{week}/year/{year}/seasontype/2', headers=HEADERS)
+            req = requests.get(f'{URL}/nfl/scoreboard/_/week/{1}/year/{2013}/seasontype/2', headers=HEADERS)
             if req.status_code == 200:
                 soup = BeautifulSoup(req.content, 'html.parser')
-                reg_season_dfs[f'season year {year}'].append(get_games_data(soup, week))
+                upload_data_vector_db(get_games_data(soup, week, year))
                 time.sleep(random.randint(3, 6))
             else:
                 print(req.status_code)
