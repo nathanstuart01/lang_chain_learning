@@ -6,7 +6,7 @@ import requests
 import pandas as pd
 from bs4 import BeautifulSoup
 
-from vector_db import upload_data_vector_db
+from vector_db import upsert_data_vector_db
 
 # filter through this to tap into unstructured data
 COMMENT_URL = "https://sbnation.coral.coralproject.net/api/graphql?query=&id=ebc63b33e210e4ed423cc4ce168937d6&variables=%7B%22storyID%22%3A23821228%2C%22storyURL%22%3A%22https%3A%2F%2Fwww.fieldgulls.com%2F2024%2F1%2F31%2F24057187%2Fmike-macdonald-2024-seahawks-coaching-staff-nfl-tracker-updates%22%2C%22commentsOrderBy%22%3A%22CREATED_AT_DESC%22%2C%22tag%22%3Anull%2C%22storyMode%22%3Anull%2C%22flattenReplies%22%3Atrue%2C%22ratingFilter%22%3Anull%2C%22refreshStream%22%3Afalse%7D"
