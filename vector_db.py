@@ -1,5 +1,4 @@
 import uuid
-import json
 
 import pandas as pd
 
@@ -46,6 +45,6 @@ def combine_embed(df):
     return df
 
 
-def upsert_vector_db(df: pd.DataFrame):
-    pc_index.upsert_from_dataframe(combine_embed(df))
+def upsert_vector_db(df: pd.DataFrame, namespace: str = None):
+    pc_index.upsert_from_dataframe(combine_embed(df), namespace=namespace, show_progress=False)
     print('done upserting vector data')

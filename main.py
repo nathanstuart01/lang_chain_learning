@@ -7,6 +7,7 @@ import pandas as pd
 from bs4 import BeautifulSoup
 
 from vector_db import upsert_vector_db
+from configs import INDEX_NAMESPACES
 
 # filter through this to tap into unstructured data
 COMMENT_URL = "https://sbnation.coral.coralproject.net/api/graphql?query=&id=ebc63b33e210e4ed423cc4ce168937d6&variables=%7B%22storyID%22%3A23821228%2C%22storyURL%22%3A%22https%3A%2F%2Fwww.fieldgulls.com%2F2024%2F1%2F31%2F24057187%2Fmike-macdonald-2024-seahawks-coaching-staff-nfl-tracker-updates%22%2C%22commentsOrderBy%22%3A%22CREATED_AT_DESC%22%2C%22tag%22%3Anull%2C%22storyMode%22%3Anull%2C%22flattenReplies%22%3Atrue%2C%22ratingFilter%22%3Anull%2C%22refreshStream%22%3Afalse%7D"
@@ -74,84 +75,90 @@ def get_games_data(soup: BeautifulSoup, week: int, year: int) -> pd.DataFrame:
     counter = 0
     game_number = 0
     for game in games:
-        counter += 1
-        box_scores = game_links[game_number].find_all('a', href=True)
-        boxsore_url = box_scores[1]['href']
-        box_scores = get_boxscores(boxsore_url)
-        if counter % 2 != 0:
-            title = game.find_previous(class_='Card__Header__Title').text
-            team1 = [t.text for t in game.select('.ScoreCell__TeamName')][0]
-            team_1_home_away = 'Away'
-            records_1 = [t.text for t in game.select('.ScoreboardScoreCell__Record')]
-            team_1_record_overall = records_1[0]
-            team_1_record_site = records_1[1]
-            score1 = [t.text for t in game.select('.ScoreCell__Score')][0] or '-'
-            quarter_scores1 = {f'q{i + 1}': int(t.text)  for i, t in enumerate(game.select('.ScoreboardScoreCell__Value'))}
-            box_score_1 = box_scores[0]
+        try:
+            counter += 1
+            box_scores = game_links[game_number].find_all('a', href=True)
+            boxsore_url = box_scores[1]['href']
+            box_scores = get_boxscores(boxsore_url)
+            if counter % 2 != 0:
+                title = game.find_previous(class_='Card__Header__Title').text
+                team1 = [t.text for t in game.select('.ScoreCell__TeamName')][0]
+                team_1_home_away = 'Away'
+                records_1 = [t.text for t in game.select('.ScoreboardScoreCell__Record')]
+                team_1_record_overall = records_1[0]
+                team_1_record_site = records_1[1]
+                score1 = [t.text for t in game.select('.ScoreCell__Score')][0] or '-'
+                quarter_scores1 = {f'q{i + 1}': int(t.text)  for i, t in enumerate(game.select('.ScoreboardScoreCell__Value'))}
+                box_score_1 = box_scores[0]
+                continue
+            else:
+                team2 = [t.text for t in game.select('.ScoreCell__TeamName')][0]
+                team_2_home_away = 'Home'
+                records_2 = [t.text for t in game.select('.ScoreboardScoreCell__Record')]
+                team_2_record_overall = records_2[0]
+                team_2_record_site = records_2[1]
+                score2 = [t.text for t in game.select('.ScoreCell__Score')][0] or '-'
+                quarter_scores2 = {f'q{i + 1}': int(t.text)  for i, t in enumerate(game.select('.ScoreboardScoreCell__Value'))}
+                box_score_2 = box_scores[1]
+                game_number += 1
+                all_data.append((
+                    week, 
+                    year, 
+                    title, 
+                    team1,
+                    team_1_home_away,
+                    team_1_record_overall,
+                    team_1_record_site,
+                    score1, 
+                    quarter_scores1,
+                    team2,
+                    team_2_home_away,
+                    team_2_record_overall,
+                    team_2_record_site,
+                    score2,
+                    quarter_scores2, 
+                    box_score_1, 
+                    box_score_2
+                ))
+                continue
+        except Exception as e:
+            print(f'Error collecting data for week: {week} and year: {year}')
+            print(f'Here is the error: {e}')
+            print(f'TODO: start saving the specific errors to index for future correcting')
             continue
-        else:
-            team2 = [t.text for t in game.select('.ScoreCell__TeamName')][0]
-            team_2_home_away = 'Home'
-            records_2 = [t.text for t in game.select('.ScoreboardScoreCell__Record')]
-            team_2_record_overall = records_2[0]
-            team_2_record_site = records_2[1]
-            score2 = [t.text for t in game.select('.ScoreCell__Score')][0] or '-'
-            quarter_scores2 = {f'q{i + 1}': int(t.text)  for i, t in enumerate(game.select('.ScoreboardScoreCell__Value'))}
-            box_score_2 = box_scores[1]
-            game_number += 1
-            all_data.append((
-                week, 
-                year, 
-                title, 
-                team1,
-                team_1_home_away,
-                team_1_record_overall,
-                team_1_record_site,
-                score1, 
-                quarter_scores1,
-                team2,
-                team_2_home_away,
-                team_2_record_overall,
-                team_2_record_site,
-                score2,
-                quarter_scores2, 
-                box_score_1, 
-                box_score_2
-            ))
-            continue
-    
+        
     return pd.DataFrame(all_data, columns=[
-        'Week',
-        'Year',
-        'Date', 
-        'Team 1', 
-        'Team 1 Site Status',
-        'Team 1 Record Overall',
-        'Team 1 Record Away',
-        'Score 1', 
-        'Quarter Scores Team 1', 
-        'Team 2', 
-        'Team 2 Site Status',
-        'Team 2 Record Overall',
-        'Team 2 Record Home',
-        'Score 2',
-        'Quarter Scores Team 2',
-        'Team 1 Box Score',
-        'Team 2 Box Score'])
+            'Week',
+            'Year',
+            'Date', 
+            'Team 1', 
+            'Team 1 Site Status',
+            'Team 1 Record Overall',
+            'Team 1 Record Away',
+            'Score 1', 
+            'Quarter Scores Team 1', 
+            'Team 2', 
+            'Team 2 Site Status',
+            'Team 2 Record Overall',
+            'Team 2 Record Home',
+            'Score 2',
+            'Quarter Scores Team 2',
+            'Team 1 Box Score',
+            'Team 2 Box Score'])
 
 
 if __name__ == '__main__':
-    # espn goes back to 1999
-    # for seasons prior to 17 games, make sure to adjust the range to be max of 17 games or less
-    years = [2019]#range(2013, 2024)
-    weeks = [1]#range(1, 18)
+    # espn goes back to 2000 with all existing data formats
+    years = [2023]#range(2000, 2023)
+    weeks_17 = range(1, 17, 1)
+    weeks_18 = range(1, 18, 1)
     for year in years:
-        for week in weeks:
-            req = requests.get(f'{URL}/nfl/scoreboard/_/week/{5}/year/{2016}/seasontype/2', headers=HEADERS)
+        for week in weeks_17 if year < 2021 else weeks_18:
+            req = requests.get(f'{URL}/nfl/scoreboard/_/week/{week}/year/{year}/seasontype/2', headers=HEADERS)
             if req.status_code == 200:
                 soup = BeautifulSoup(req.content, 'html.parser')
-                upsert_vector_db(get_games_data(soup, week, year))
-                time.sleep(random.randint(3, 6))
+                upsert_vector_db(get_games_data(soup, week, year), namespace=INDEX_NAMESPACES['nfl']['reg_season'])
+                time.sleep(random.randint(1, 5))
             else:
                 print(req.status_code)
                 print(req.content)
