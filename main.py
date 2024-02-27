@@ -6,7 +6,7 @@ import requests
 import pandas as pd
 from bs4 import BeautifulSoup
 
-from vector_db import upsert_data_vector_db
+from vector_db import upsert_vector_db
 
 # filter through this to tap into unstructured data
 COMMENT_URL = "https://sbnation.coral.coralproject.net/api/graphql?query=&id=ebc63b33e210e4ed423cc4ce168937d6&variables=%7B%22storyID%22%3A23821228%2C%22storyURL%22%3A%22https%3A%2F%2Fwww.fieldgulls.com%2F2024%2F1%2F31%2F24057187%2Fmike-macdonald-2024-seahawks-coaching-staff-nfl-tracker-updates%22%2C%22commentsOrderBy%22%3A%22CREATED_AT_DESC%22%2C%22tag%22%3Anull%2C%22storyMode%22%3Anull%2C%22flattenReplies%22%3Atrue%2C%22ratingFilter%22%3Anull%2C%22refreshStream%22%3Afalse%7D"
@@ -141,14 +141,16 @@ def get_games_data(soup: BeautifulSoup, week: int, year: int) -> pd.DataFrame:
 
 
 if __name__ == '__main__':
-    years = range(2013, 2024)
-    weeks = range(1, 18)
+    # espn goes back to 1999
+    # for seasons prior to 17 games, make sure to adjust the range to be max of 17 games or less
+    years = [2019]#range(2013, 2024)
+    weeks = [1]#range(1, 18)
     for year in years:
         for week in weeks:
             req = requests.get(f'{URL}/nfl/scoreboard/_/week/{5}/year/{2016}/seasontype/2', headers=HEADERS)
             if req.status_code == 200:
                 soup = BeautifulSoup(req.content, 'html.parser')
-                upload_data_vector_db(get_games_data(soup, week, year))
+                upsert_vector_db(get_games_data(soup, week, year))
                 time.sleep(random.randint(3, 6))
             else:
                 print(req.status_code)

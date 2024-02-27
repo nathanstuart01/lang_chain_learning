@@ -3,7 +3,7 @@ import time
 
 from pinecone import Pinecone, PodSpec
 
-from pinecone_configs import pc
+from configs import pc
 
 def create_index(index_name: str, pc: Pinecone):
     print(f'creating index: {index_name}')
