@@ -2,11 +2,8 @@ import uuid
 
 import pandas as pd
 
-from configs import pc_index, openai_client, embedding_model
-
-def get_embedding(text, model="text-embedding-3-small"):
-   text = text.replace("\n", " ")
-   return openai_client.embeddings.create(input = [text], model=model).data[0].embedding
+from configs import pc_index, openai_client, EMBEDDINGS_MODEL
+from utils import get_embedding
 
 def create_metadata(row: pd.DataFrame):
     data = row.to_dict()
@@ -20,7 +17,7 @@ def create_metadata(row: pd.DataFrame):
 
 def combine_embed(df):
     df['combined'] = df.apply(lambda row: f'NFL Season Year: {row["Year"]}, Week: {row["Week"]}, Game Date: {row["Date"]}, Team 1: {row["Team 1"]}, Team 1 Site Status: {row["Team 1 Site Status"]}, Team 2: {row["Team 2"]}, Team 2 Site Status: {row["Team 2 Site Status"]}', axis=1)
-    df["values"] = df.combined.apply(lambda x: get_embedding(x, model=embedding_model))
+    df["values"] = df.combined.apply(lambda x: get_embedding(x, model=EMBEDDINGS_MODEL))
     df['id'] = [uuid.uuid4().hex for _ in range(len(df.index))]
     df['metadata'] = df.apply(lambda row: create_metadata(row), axis=1)
     df.drop([
