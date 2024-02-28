@@ -28,6 +28,10 @@ def get_context(question: str, namespace: str, max_len: int = 3750, filters: dic
     return "\\\\n\\\\n###\\\\n\\\\n".join(contexts)
 
 if __name__ == "__main__":
+    # Pretty sure:
+    # Give this a go:
+    # python get_context.py "what are all the games the played in the 2023 nfl season for the first three weeks of the season"
+    # Worked to get all the games above, well done machine!
     context_question = sys.argv[1]
     if not context_question:
         raise ValueError("Context question cannot be blank")
