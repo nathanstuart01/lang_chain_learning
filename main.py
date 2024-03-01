@@ -122,9 +122,8 @@ def get_games_data(soup: BeautifulSoup, week: int, year: int) -> pd.DataFrame:
                 ))
                 continue
         except Exception as e:
-            print(f'Error collecting data for week: {week} and year: {year}')
+            print(f'Error parsing data for week: {week} and year: {year}')
             print(f'Here is the error: {e}')
-            print(f'TODO: start saving the specific errors to index for future correcting')
             continue
         
     return pd.DataFrame(all_data, columns=[
@@ -149,7 +148,7 @@ def get_games_data(soup: BeautifulSoup, week: int, year: int) -> pd.DataFrame:
 
 if __name__ == '__main__':
     # espn goes back to 2000 with all existing data formats
-    years = [2023]#range(2000, 2023)
+    years = range(2000, 2023)
     weeks_17 = range(1, 17, 1)
     weeks_18 = range(1, 18, 1)
     for year in years:
@@ -161,5 +160,340 @@ if __name__ == '__main__':
                 time.sleep(random.randint(1, 5))
             else:
                 print(req.status_code)
-                print(req.content)
+                print(f'failed to get espn page source for week: {week} and year {year}')
     print('done')
+    # TODO: Make better error saving solution. 
+    # TODO: Have chatGPT summarize the following errors by year and week
+    # TODO: make a individual week and year getter to re-crawl the errors surfaced
+    # Create separate namespace index for each sport and season type
+    # Save each error with filterable info and make it a util function with the following metadata
+    # week year url sport season type
+    # from first run: 2/29/2024 10pm PST,  seasons 2000 - 2023, weeks 1-18, the following errors occurred:
+    """
+    Error parsing data for week: 1 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    Error parsing data for week: 1 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    done upserting vector data
+    Error parsing data for week: 2 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    Error parsing data for week: 2 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    done upserting vector data
+    Error parsing data for week: 3 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    Error parsing data for week: 3 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    done upserting vector data
+    Error parsing data for week: 4 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    Error parsing data for week: 4 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    done upserting vector data
+    Error parsing data for week: 5 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    Error parsing data for week: 5 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    done upserting vector data
+    Error parsing data for week: 6 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    Error parsing data for week: 6 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    done upserting vector data
+    Error parsing data for week: 7 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    Error parsing data for week: 7 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    done upserting vector data
+    Error parsing data for week: 8 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    Error parsing data for week: 8 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    done upserting vector data
+    Error parsing data for week: 9 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    Error parsing data for week: 9 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    done upserting vector data
+    Error parsing data for week: 10 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    Error parsing data for week: 10 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    done upserting vector data
+    Error parsing data for week: 11 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    Error parsing data for week: 11 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    done upserting vector data
+    Error parsing data for week: 12 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    Error parsing data for week: 12 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    done upserting vector data
+    Error parsing data for week: 13 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    Error parsing data for week: 13 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    done upserting vector data
+    Error parsing data for week: 14 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    Error parsing data for week: 14 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    done upserting vector data
+    Error parsing data for week: 15 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    Error parsing data for week: 15 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    done upserting vector data
+    Error parsing data for week: 16 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+    Error parsing data for week: 16 and year: 2000
+    Here is the error: invalid literal for int() with base 10: '-'
+
+    Error parsing data for week: 7 and year: 2003
+    Here is the error: invalid literal for int() with base 10: '-'
+    Error parsing data for week: 7 and year: 2003
+    Here is the error: invalid literal for int() with base 10: '-'
+
+    Error parsing data for week: 13 and year: 2012
+    Here is the error: list index out of range
+
+    Error parsing data for week: 13 and year: 2012
+    Here is the error: list index out of range
+
+    Error parsing data for week: 7 and year: 2013
+    Here is the error: list index out of range
+
+    Error parsing data for week: 4 and year: 2014
+    Here is the error: list index out of range
+    Error parsing data for week: 4 and year: 2014
+    Here is the error: list index out of range
+
+    Error parsing data for week: 8 and year: 2014
+    Here is the error: list index out of range
+    Error parsing data for week: 8 and year: 2014
+    Here is the error: list index out of range
+
+    Error parsing data for week: 10 and year: 2014
+    Here is the error: list index out of range
+    Error parsing data for week: 10 and year: 2014
+    Here is the error: list index out of range
+
+    Error parsing data for week: 12 and year: 2014
+    Here is the error: list index out of range
+    Error parsing data for week: 12 and year: 2014
+    Here is the error: list index out of range
+    Error parsing data for week: 12 and year: 2014
+    Here is the error: list index out of range
+    Error parsing data for week: 12 and year: 2014
+    Here is the error: list index out of range
+    Error parsing data for week: 12 and year: 2014
+    Here is the error: list index out of range
+    Error parsing data for week: 12 and year: 2014
+    Here is the error: list index out of range
+
+    Error parsing data for week: 4 and year: 2015
+    Here is the error: list index out of range
+    Error parsing data for week: 4 and year: 2015
+    Here is the error: list index out of range
+
+    Error parsing data for week: 7 and year: 2015
+    Here is the error: list index out of range
+    Error parsing data for week: 7 and year: 2015
+    Here is the error: list index out of range
+
+    Error parsing data for week: 8 and year: 2015
+    Here is the error: list index out of range
+    Error parsing data for week: 8 and year: 2015
+    Here is the error: list index out of range
+
+    Error parsing data for week: 4 and year: 2016
+    Here is the error: list index out of range
+    Error parsing data for week: 4 and year: 2016
+    Here is the error: list index out of range
+
+    Error parsing data for week: 7 and year: 2016
+    Here is the error: list index out of range
+    Error parsing data for week: 7 and year: 2016
+    Here is the error: list index out of range
+
+    Error parsing data for week: 8 and year: 2016
+    Here is the error: list index out of range
+    Error parsing data for week: 8 and year: 2016
+    Here is the error: list index out of range
+
+    Error parsing data for week: 11 and year: 2016
+    Here is the error: list index out of range
+    Error parsing data for week: 11 and year: 2016
+    Here is the error: list index out of range
+
+    Error parsing data for week: 1 and year: 2017
+    Here is the error: list index out of range
+    Error parsing data for week: 1 and year: 2017
+    Here is the error: list index out of range
+    Error parsing data for week: 1 and year: 2017
+    Here is the error: list index out of range
+    Error parsing data for week: 1 and year: 2017
+    Here is the error: list index out of range
+    Error parsing data for week: 1 and year: 2017
+    Here is the error: list index out of range
+    Error parsing data for week: 1 and year: 2017
+    Here is the error: list index out of range
+
+    Error parsing data for week: 3 and year: 2017
+    Here is the error: list index out of range
+    Error parsing data for week: 3 and year: 2017
+    Here is the error: list index out of range
+
+    Error parsing data for week: 4 and year: 2017
+    Here is the error: list index out of range
+    Error parsing data for week: 4 and year: 2017
+    Here is the error: list index out of range
+
+    Error parsing data for week: 7 and year: 2017
+    Here is the error: list index out of range
+    Error parsing data for week: 7 and year: 2017
+    Here is the error: list index out of range
+
+    Error parsing data for week: 8 and year: 2017
+    Here is the error: list index out of range
+    Error parsing data for week: 8 and year: 2017
+    Here is the error: list index out of range
+    Error parsing data for week: 8 and year: 2017
+    Here is the error: list index out of range
+    Error parsing data for week: 8 and year: 2017
+    Here is the error: list index out of range
+    Error parsing data for week: 8 and year: 2017
+    Here is the error: list index out of range
+    Error parsing data for week: 8 and year: 2017
+    Here is the error: list index out of range
+
+    Error parsing data for week: 11 and year: 2017
+    Here is the error: list index out of range
+    Error parsing data for week: 11 and year: 2017
+    Here is the error: list index out of range
+
+    Error parsing data for week: 12 and year: 2017
+    Here is the error: list index out of range
+    Error parsing data for week: 12 and year: 2017
+    Here is the error: list index out of range
+    Error parsing data for week: 12 and year: 2017
+    Here is the error: list index out of range
+    Error parsing data for week: 12 and year: 2017
+    Here is the error: list index out of range
+    Error parsing data for week: 12 and year: 2017
+    Here is the error: list index out of range
+    Error parsing data for week: 12 and year: 2017
+    Here is the error: list index out of range
+    Error parsing data for week: 12 and year: 2017
+    Here is the error: list index out of range
+    Error parsing data for week: 12 and year: 2017
+    Here is the error: list index out of range
+    Error parsing data for week: 12 and year: 2017
+    Here is the error: list index out of range
+    Error parsing data for week: 12 and year: 2017
+    Here is the error: list index out of range
+    Error parsing data for week: 12 and year: 2017
+    Here is the error: list index out of range
+    Error parsing data for week: 12 and year: 2017
+    Here is the error: list index out of range
+    Error parsing data for week: 12 and year: 2017
+    Here is the error: list index out of range
+    Error parsing data for week: 12 and year: 2017
+    Here is the error: list index out of range
+    Error parsing data for week: 12 and year: 2017
+    Here is the error: list index out of range
+    Error parsing data for week: 12 and year: 2017
+    Here is the error: list index out of range
+
+    Error parsing data for week: 6 and year: 2018
+    Here is the error: list index out of range
+    Error parsing data for week: 6 and year: 2018
+    Here is the error: list index out of range
+
+    Error parsing data for week: 7 and year: 2018
+    Here is the error: list index out of range
+    Error parsing data for week: 7 and year: 2018
+    Here is the error: list index out of range
+
+    Error parsing data for week: 8 and year: 2018
+    Here is the error: list index out of range
+    Error parsing data for week: 8 and year: 2018
+    Here is the error: list index out of range
+
+    Error parsing data for week: 5 and year: 2019
+    Here is the error: list index out of range
+    Error parsing data for week: 5 and year: 2019
+    Here is the error: list index out of range
+
+    Error parsing data for week: 6 and year: 2019
+    Here is the error: list index out of range
+    Error parsing data for week: 6 and year: 2019
+    Here is the error: list index out of range
+    Error parsing data for week: 6 and year: 2019
+    Here is the error: list index out of range
+    Error parsing data for week: 6 and year: 2019
+    Here is the error: list index out of range
+
+    503 webserver error
+    failed to get espn page source for week: 7 and year 2019
+
+    Error parsing data for week: 8 and year: 2019
+    Here is the error: list index out of range
+    Error parsing data for week: 8 and year: 2019
+    Here is the error: list index out of range
+
+    Error parsing data for week: 9 and year: 2019
+    Here is the error: list index out of range
+    Error parsing data for week: 9 and year: 2019
+    Here is the error: list index out of range
+
+    Error parsing data for week: 11 and year: 2019
+    Here is the error: list index out of range
+    Error parsing data for week: 11 and year: 2019
+    Here is the error: list index out of range
+
+    Error parsing data for week: 5 and year: 2021
+    Here is the error: list index out of range
+    Error parsing data for week: 5 and year: 2021
+    Here is the error: list index out of range
+
+    Error parsing data for week: 6 and year: 2021
+    Here is the error: list index out of range
+    Error parsing data for week: 6 and year: 2021
+    Here is the error: list index out of range
+
+    Error parsing data for week: 4 and year: 2022
+    Here is the error: list index out of range
+    Error parsing data for week: 4 and year: 2022
+    Here is the error: list index out of range
+
+    Error parsing data for week: 5 and year: 2022
+    Here is the error: list index out of range
+    Error parsing data for week: 5 and year: 2022
+    Here is the error: list index out of range
+
+    Error parsing data for week: 8 and year: 2022
+    Here is the error: list index out of range
+    Error parsing data for week: 8 and year: 2022
+    Here is the error: list index out of range
+
+    Error parsing data for week: 10 and year: 2022
+    Here is the error: list index out of range
+    Error parsing data for week: 10 and year: 2022
+    Here is the error: list index out of range
+
+    Error parsing data for week: 11 and year: 2022
+    Here is the error: list index out of range
+    Error parsing data for week: 11 and year: 2022
+    Here is the error: list index out of range
+    Error parsing data for week: 11 and year: 2022
+    Here is the error: list index out of range
+    Error parsing data for week: 11 and year: 2022
+    Here is the error: list index out of range
+
+    Error parsing data for week: 17 and year: 2022
+    Here is the error: list index out of range
+    Error parsing data for week: 17 and year: 2022
+    Here is the error: list index out of range
+    """

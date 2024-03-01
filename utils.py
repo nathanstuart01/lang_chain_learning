@@ -4,12 +4,11 @@ from pinecone import Pinecone, PodSpec
 import tiktoken
 from tiktoken import Encoding
 
-from configs import pc_index, openai_client, EMBEDDINGS_MODEL
+from configs import pc_index, openai_client, EMBEDDINGS_MODEL, encoding
 
-def get_token_count(model_name=EMBEDDINGS_MODEL) -> Encoding:
+def get_token_count(text: str) -> Encoding:
     # https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken
-    encoding = tiktoken.encoding_for_model(model_name)
-    return encoding
+    return len(encoding.encode(text))
 
 def delete_vectors():
     delete_response = pc_index.delete(deleteAll=True)
