@@ -1,10 +1,11 @@
 import time
 
 from pinecone import Pinecone, PodSpec
-import tiktoken
 from tiktoken import Encoding
 
+
 from configs import pc_index, openai_client, EMBEDDINGS_MODEL, encoding
+
 
 def get_token_count(text: str) -> Encoding:
     # https://cookbook.openai.com/examples/how_to_count_tokens_with_tiktoken
