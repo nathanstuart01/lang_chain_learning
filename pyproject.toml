@@ -14,6 +14,7 @@ bs4 = "^0.0.2"
 pinecone-client = "^3.0.3"
 langchain-pinecone = "^0.0.3"
 langchain-openai = "^0.0.7"
+praw = "^7.7.1"
 
 
 [build-system]

@@ -5,6 +5,7 @@ from pinecone import Pinecone
 from openai import OpenAI
 import tiktoken
 import requests
+import praw
 
 load_dotenv()
 
@@ -14,6 +15,7 @@ reddit_pass = os.getenv("REDDIT_PASS")
 reddit_user = os.getenv("REDDIT_USER")
 reddit_app_id = os.getenv("REDDIT_CLIENT_ID")
 reddit_app_secret = os.getenv("REDDIT_SECRET")
+reddit_token = os.getenv("REDDIT_TOKEN")
 
 openai_client = OpenAI()
 EMBEDDINGS_MODEL = "text-embedding-3-small"
@@ -21,6 +23,14 @@ EMBEDDINGS_MODEL = "text-embedding-3-small"
 INDEX_NAMESPACES = {'nfl': {'reg_season': 'nfl_reg_season', 'post_season': 'nfl_post_season'}}
 
 encoding = tiktoken.encoding_for_model(EMBEDDINGS_MODEL)
+
+reddit = praw.Reddit(
+    client_id=reddit_app_id,
+    client_secret=reddit_app_secret,
+    password=reddit_pass,
+    user_agent="ChangeMeClient/0.1 by YourUsername",
+    username=reddit_user,
+)
 
 def get_reddit_token():
     #https://github.com/reddit-archive/reddit/wiki/OAuth2
